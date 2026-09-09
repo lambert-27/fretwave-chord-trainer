@@ -6,7 +6,7 @@ import numpy as np
 
 # STEP 1 — Load a single chord clip (A major) and inspect it
 
-# Load the audio file as a waveform array, with its sample rate `sr`.
+# Load the audio file as a waveform array, with its sample rate
 # sr=None uses the files own sample rate
 aMajor, sampleRate = librosa.load('clips/Amaj.wav', sr=None)
 
@@ -62,7 +62,7 @@ def detect_chord(chroma_frame):
 avg_chroma = np.mean(chroma, axis=1)
 print(f"The chord is: {detect_chord(avg_chroma)}")
 
-# STEP 4 — Load a chord-change clip and detect strum onsets
+# STEP 4 — Load a new chord-change clip and detect strum onsets
 
 # Load the C-to-G transition clip.
 cToG, sampleRate2 = librosa.load('clips/C_to_G.wav', sr=None)
