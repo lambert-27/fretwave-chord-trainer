@@ -45,11 +45,22 @@ def detect_chord(chroma_frame):
     Compare a single 12-length chroma vector against every chord template
     using cosine similarity, and return the best-matching chord name plus
     its similarity score (0 to 1, higher = more confident).
+
+    dot product / (length of a * length of b)
+    Parameters: a - chroma_frame
+                b - template
+                a.b - np.dot(chroma_frame, a)
+                ||a|| - np.linalg.norm(chroma_frame) [length of the vector]
+                ||b|| - np.linalg.norm(template)
+                cos0 - score
+    a . b = ||a|| ||b|| cos0
+    cos0 = (a . b) / ||a|| ||b||
     """
+
     best_match, best_score = None, -1
     for name, template in chord_templates.items():
         # Cosine similarity: dot product of the two vectors, divided by
-        # the product of their magnitudes.
+        # the product of their magnitudes
         score = np.dot(chroma_frame, template) / (
             np.linalg.norm(chroma_frame) * np.linalg.norm(template)
         )
@@ -59,6 +70,7 @@ def detect_chord(chroma_frame):
 
 # STEP 3 — Call functions to detect audio for A major
 
+# axis=1 as we want to take the average across each row
 avg_chroma = np.mean(chroma, axis=1)
 print(f"The chord is: {detect_chord(avg_chroma)}")
 
