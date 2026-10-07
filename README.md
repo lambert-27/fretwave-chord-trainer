@@ -1,11 +1,10 @@
 # **Final Year Project - Year 4 Software Development**
-## Librosa Research Notebook
 *By Mark Lambert - C00192497*
 
 ---
 
 ## Description
-Repository for my Final Year Project, a guitar chord detection tool
+Repository for my Final Year Project, a guitar chord detection tool built using Python and the librosa library
 
 ## Author
 
