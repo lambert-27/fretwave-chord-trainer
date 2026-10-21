@@ -38,7 +38,30 @@ def detect_chord(chroma_frame):
             best_score = score
 
     return best_match, best_score
+    
+def get_chords(chords, sr):
+    result = ""
 
+    onset_frames = librosa.onset.onset_detect(y=chords, sr=sr)
+    chroma = librosa.feature.chroma_stft(y=chords, sr=sr)
+    
+    for i in range (1, len(onset_frames)):
+        prev = onset_frames[i-1]
+        cur = onset_frames[i]
+    
+        # using multi demnsional array slicing, we keep all 12 rows (the pitch class)
+        # and slice from frame prev to frame cur
+        strum_slice = chroma[:, prev: cur]
+    
+        # calculate the average chroma for the slice
+        avg_chroma = np.mean(strum_slice, axis=1)
+    
+        chord, score = detect_chord(avg_chroma)
+        print(f"Chord: {chord}, Score: {score}")
+        
+        result += f"{chord} {score:.2f} " 
+    return result
+    
 def record():
     # producer-consumer model for continuous recording. Using a queue and a callback to 
     # produce blocks of audio that are pushed to the queue and then pulled 
@@ -67,7 +90,8 @@ def record():
     except Exception as e:
         print(f"Error: {type(e).__name__} - {e}")
 
-    return filename
+    clip, sr = librosa.load('clips/testclip.wav', sr=None)
+    return clip, sr
 
 def analyse():
     clip, samplerate = librosa.load('clips/testclip.wav', sr=None)
