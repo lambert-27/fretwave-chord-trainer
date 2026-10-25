@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module ChordDetect</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">ChordDetect</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Crepos%5Cy4-project%5Citeration%201%5Cchorddetect.py">c:\repos\y4-project\iteration 1\chorddetect.py</a></td></tr></table>
+    <p><span class="code">Purpose:&nbsp;Functions&nbsp;extracted&nbsp;from&nbsp;First&nbsp;Iteration&nbsp;notebooks&nbsp;to&nbsp;perform&nbsp;chord&nbsp;and&nbsp;onset&nbsp;detection<br>
+Author:&nbsp;Mark&nbsp;Lambert<br>
+&nbsp;<br>
+Provides&nbsp;a&nbsp;bank&nbsp;of&nbsp;chord&nbsp;templates&nbsp;represented&nbsp;as&nbsp;12&nbsp;length&nbsp;vectors&nbsp;mapped&nbsp;to&nbsp;each&nbsp;pitch&nbsp;class</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="librosa.html">librosa</a><br>
+<a href="numpy.html">numpy</a><br>
+</td><td class="multicolumn"><a href="matplotlib.pyplot.html">matplotlib.pyplot</a><br>
+<a href="queue.html">queue</a><br>
+</td><td class="multicolumn"><a href="sounddevice.html">sounddevice</a><br>
+<a href="soundfile.html">soundfile</a><br>
+</td><td class="multicolumn"><a href="sys.html">sys</a><br>
+<a href="tempfile.html">tempfile</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-analyse"><strong>analyse</strong></a>()</dt></dl>
+ <dl><dt><a name="-detect_chord"><strong>detect_chord</strong></a>(chroma_frame)</dt><dd><span class="code">Detect&nbsp;notes&nbsp;in&nbsp;a&nbsp;chroma&nbsp;vector&nbsp;using&nbsp;cosine&nbsp;similarity&nbsp;against&nbsp;the&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;template&nbsp;chord&nbsp;bank&nbsp;and&nbsp;return&nbsp;the&nbsp;closest&nbsp;match<br>
+&nbsp;<br>
+:param&nbsp;chroma_frame:&nbsp;the&nbsp;12&nbsp;element&nbsp;average&nbsp;chroma&nbsp;vector<br>
+&nbsp;<br>
+:return:&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;best&nbsp;match&nbsp;chord,&nbsp;taken&nbsp;from&nbsp;the&nbsp;average&nbsp;chroma&nbsp;frame&nbsp;and&nbsp;the&nbsp;certainty&nbsp;score&nbsp;of&nbsp;the&nbsp;algorithm</span></dd></dl>
+ <dl><dt><a name="-get_chords"><strong>get_chords</strong></a>(chords, sr)</dt><dd><span class="code">Divides&nbsp;an&nbsp;audio&nbsp;clip&nbsp;into&nbsp;individual&nbsp;onsets&nbsp;and&nbsp;prints&nbsp;the&nbsp;detected&nbsp;chords&nbsp;for&nbsp;each&nbsp;onset&nbsp;segment&nbsp;(prev&nbsp;and&nbsp;cur)<br>
+&nbsp;<br>
+:param&nbsp;chords:&nbsp;the&nbsp;raw&nbsp;audio&nbsp;loaded&nbsp;by&nbsp;librosa.load(),&nbsp;stored&nbsp;as&nbsp;a&nbsp;numpy&nbsp;array<br>
+:param&nbsp;sr:&nbsp;The&nbsp;sample&nbsp;rate&nbsp;of&nbsp;the&nbsp;audio&nbsp;track<br>
+&nbsp;<br>
+:return:&nbsp;A&nbsp;string&nbsp;that&nbsp;labels&nbsp;each&nbsp;sequence&nbsp;of&nbsp;chord&nbsp;detected&nbsp;and&nbsp;the&nbsp;score</span></dd></dl>
+ <dl><dt><a name="-record"><strong>record</strong></a>()</dt><dd><span class="code">Microphone&nbsp;input&nbsp;is&nbsp;continuously&nbsp;recorded&nbsp;by&nbsp;writing&nbsp;blocks&nbsp;directly&nbsp;to&nbsp;a&nbsp;file<br>
+&nbsp;<br>
+Uses&nbsp;a&nbsp;producer-consumer&nbsp;model&nbsp;with&nbsp;a&nbsp;queue&nbsp;as&nbsp;the&nbsp;store.&nbsp;Recording&nbsp;stops&nbsp;once&nbsp;the&nbsp;user&nbsp;terminates&nbsp;the&nbsp;kernel<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+:return:&nbsp;The&nbsp;loaded&nbsp;audio&nbsp;clip&nbsp;and&nbsp;samplerate&nbsp;of&nbsp;the&nbsp;track</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>chord_templates</strong> = {'A': [0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0], 'Am': [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0], 'C': [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0], 'D': [0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0], 'Dm': [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0], 'E': [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1], 'Em': [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1], 'F': [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0], 'G': [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1]}</td></tr></table>
+</body></html>
