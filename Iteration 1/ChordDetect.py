@@ -61,27 +61,44 @@ def get_chords(chords, sr):
     :return: A string that labels each sequence of chord detected and the score
 
     """
-    result = ""
-
     onset_frames = librosa.onset.onset_detect(y=chords, sr=sr)
     chroma = librosa.feature.chroma_stft(y=chords, sr=sr)
-    
+    # append the final frame so the segment after the last onset is also analysed
+    onset_frames = np.append(onset_frames, chroma.shape[1])
+    # a list starting at first strum frame, will hold only relevant
+    # onsets w/ noise discarded
+    strum_group = [onset_frames[0]]
+    detected = []
+    buffer = 0.5
+    # iterate each raw onset, filter out any that happen within buffer length of time
     for i in range (1, len(onset_frames)):
         prev = onset_frames[i-1]
         cur = onset_frames[i]
-    
+
+        frame_since_last = cur - prev
+        if librosa.frames_to_time(frame_since_last, sr=sr) > buffer:
+            strum_group.append(cur)
+
+    # then iterate through the strumgroup list and define an end for each slice of chord
+    for index, strum_start in enumerate(strum_group):
+        if index + 1 < len(strum_group):
+            strum_end = strum_group[index+1]
+        else:
+            strum_end = len(chroma[0])               
+        if strum_start >= strum_end:
+            continue
         # using multi demnsional array slicing, we keep all 12 rows (the pitch class)
         # and slice from frame prev to frame cur
-        strum_slice = chroma[:, prev: cur]
+        strum_slice = chroma[:, strum_start: strum_end]
     
         # calculate the average chroma for the slice
         avg_chroma = np.mean(strum_slice, axis=1)
-    
-        chord, score = detect_chord(avg_chroma)
-        print(f"Chord: {chord}, Score: {score}")
         
-        result += f"{chord} {score:.2f} " 
-    return result
+        chord, score = detect_chord(avg_chroma)
+        percent = score*100
+        print(f"Chord: {chord}, Score:{percent:.2f}%")
+        detected.append((chord, percent))
+    return detected
     
 def record():
     """
