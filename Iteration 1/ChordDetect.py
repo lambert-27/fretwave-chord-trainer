@@ -1,3 +1,9 @@
+"""
+Purpose: Functions extracted from First Iteration notebooks to perform chord and onset detection
+Author: Mark Lambert
+
+Provides a bank of chord templates represented as 12 length vectors mapped to each pitch class
+"""
 import librosa
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,7 +13,10 @@ import tempfile
 import sounddevice as sd
 import soundfile as sf
 
-# 0=C, 1=C#, 2=D, 3=D#, 4=E, 5=F, 6=F#, 7=G, 8=G#, 9=A, 10=A#, 11=B, exactly like the 12 pitch classes from a chroma
+
+#dictionary of chord templates, 
+# 0=C, 1=C#, 2=D, 3=D#, 4=E, 5=F, 6=F#, 7=G, 8=G#, 9=A, 10=A#, 11=B, 
+# exactly like the 12 pitch classes from a chroma
 chord_templates = {
     'C':  [1,0,0,0,1,0,0,1,0,0,0,0],
     'G':  [0,0,1,0,0,0,0,1,0,0,0,1],
@@ -22,9 +31,12 @@ chord_templates = {
 
 def detect_chord(chroma_frame):
     '''
-    :param chroma_frame: section of audio as a chroma, to analyse the notes present and find the best
-                        chord match
-    :return: the best match chord, taken from the average chroma frame
+    Detect notes in a chroma vector using cosine similarity against the 
+        template chord bank and return the closest match
+    
+    :param chroma_frame: the 12 element average chroma vector
+    
+    :return: A tuple containing the best match chord, taken from the average chroma frame and the certainty score of the algorithm
     '''
 
     best_match = None
@@ -40,6 +52,15 @@ def detect_chord(chroma_frame):
     return best_match, best_score
     
 def get_chords(chords, sr):
+    """
+    Divides an audio clip into individual onsets and prints the detected chords for each onset segment (prev and cur)
+    
+    :param chords: the raw audio loaded by librosa.load(), stored as a numpy array
+    :param sr: The sample rate of the audio track
+    
+    :return: A string that labels each sequence of chord detected and the score
+
+    """
     result = ""
 
     onset_frames = librosa.onset.onset_detect(y=chords, sr=sr)
@@ -63,6 +84,14 @@ def get_chords(chords, sr):
     return result
     
 def record():
+    """
+    Microphone input is continuously recorded by writing blocks directly to a file
+
+    Uses a producer-consumer model with a queue as the store. Recording stops once the user terminates the kernel
+        
+    :return: The loaded audio clip and samplerate of the track
+
+    """
     # producer-consumer model for continuous recording. Using a queue and a callback to 
     # produce blocks of audio that are pushed to the queue and then pulled 
     # by the q.get(), to consume from the buffer and written to the file
@@ -75,12 +104,14 @@ def record():
         q.put(indata.copy())
     
     try:
+        # bug fix: use query_devices to get the systems default input device channel count
+        channels = int(sd.query_devices(device=None, kind='input')['max_input_channels'])
         # Make sure the file is opened before starting recording, mode=x ensures that the file can't exist,
-        # mode=w however, allowss to overwrite
-        with sf.SoundFile(filename, mode="w", samplerate=freq, channels=2,subtype=None) as file:
+        # mode=w however, allowss to overwrite. 
+        with sf.SoundFile(filename, mode="w", samplerate=freq, channels=channels,subtype=None) as file:
             # Entering this with block starts the stream, which calls callback for each audio block
             # device=none defaults to systems default
-            with sd.InputStream(samplerate=freq, device=None, channels=2, callback=callback):
+            with sd.InputStream(samplerate=freq, device=None, channels=channels, callback=callback):
                 print("Recording, press the stop button in Jupyter Notebook to stop")
                 while True:
                     file.write(q.get())
