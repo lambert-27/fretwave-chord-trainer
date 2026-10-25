@@ -12,6 +12,7 @@ import sys
 import tempfile
 import sounddevice as sd
 import soundfile as sf
+import time
 
 
 #dictionary of chord templates, 
@@ -100,6 +101,28 @@ def get_chords(chords, sr):
         detected.append((chord, percent))
     return detected
     
+def check_chords(detected, prompted):
+    """
+    Compares each detected chord against the chord the user was prompted with, in the order they appeared when printed
+
+    :param detected: list of tuples containing (chord, percent) returned from get_chords()
+    :param prompted: list of chord names the user was prompted with, in order they appeared when printed
+
+    :return: list of tuples, true if the chord occured at the same position as the detected along with the prompted chord name
+    """
+    results = []
+    
+    for i, chord in enumerate(prompted):
+        is_correct = False
+        # Check if a chord was detected at this index and if it matches the target
+        if i < len(detected) and detected[i][0] == chord:
+            is_correct = True
+
+        result = (chord, is_correct)
+        results.append(result)
+    return results
+
+
 def record():
     """
     Microphone input is continuously recorded by writing blocks directly to a file
@@ -115,7 +138,9 @@ def record():
     filename = "clips/testclip.wav" 
     freq = 44100  
     q = queue.Queue()
-    
+
+    # added a small sleep to allow for getting ready to strum
+    time.sleep(1)
     def callback(indata, _, __, ___):
         """This is called from a separate thread for each audio block."""
         q.put(indata.copy())
