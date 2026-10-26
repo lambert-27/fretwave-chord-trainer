@@ -1,8 +1,9 @@
 """
-Purpose: Functions extracted from First Iteration notebooks to perform chord and onset detection
+Purpose: Functions extracted from First Iteration notebooks to record and perform chord and onset detection
+Provides a bank of chord templates represented as 12 length vectors mapped to each pitch class 
+
 Author: Mark Lambert
 
-Provides a bank of chord templates represented as 12 length vectors mapped to each pitch class
 """
 import librosa
 import matplotlib.pyplot as plt
@@ -63,7 +64,9 @@ def get_chords(chords, sr):
 
     """
     onset_frames = librosa.onset.onset_detect(y=chords, sr=sr)
-    chroma = librosa.feature.chroma_stft(y=chords, sr=sr)
+    # swapped from stft to cqt. cqt uses logarithmic frequency spacing 
+    # to map to each semitone (12 pitch classes) gives much higher accuracy
+    chroma = librosa.feature.chroma_cqt(y=chords, sr=sr)
     # append the final frame so the segment after the last onset is also analysed
     onset_frames = np.append(onset_frames, chroma.shape[1])
     # a list starting at first strum frame, will hold only relevant
@@ -122,7 +125,6 @@ def check_chords(detected, prompted):
         results.append(result)
     return results
 
-
 def record():
     """
     Microphone input is continuously recorded by writing blocks directly to a file
@@ -167,6 +169,12 @@ def record():
     return clip, sr
 
 def analyse():
+    """
+        Helper function used during notebook research that loads the clip saved by record(),
+        calculate the average chroma and detect the chord
+
+        :return: The detected chord and similarity score from detect_chord
+    """
     clip, samplerate = librosa.load('clips/testclip.wav', sr=None)
     chroma = librosa.feature.chroma_cqt(y=clip, sr=samplerate)
     avg_chroma = np.mean(chroma, axis=1)
