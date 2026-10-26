@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from ChordDetect import chord_templates, record, detect_chord, get_chords, check_chords, record
+from ChordDetect import chord_templates, detect_chord, get_chords, check_chords, record
 
 class ChordDetectTest(unittest.TestCase):
 

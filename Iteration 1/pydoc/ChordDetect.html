@@ -55,7 +55,7 @@ calculate&nbsp;the&nbsp;average&nbsp;chroma&nbsp;and&nbsp;detect&nbsp;the&nbsp;c
 :param&nbsp;chords:&nbsp;the&nbsp;raw&nbsp;audio&nbsp;loaded&nbsp;by&nbsp;librosa.load(),&nbsp;stored&nbsp;as&nbsp;a&nbsp;numpy&nbsp;array<br>
 :param&nbsp;sr:&nbsp;The&nbsp;sample&nbsp;rate&nbsp;of&nbsp;the&nbsp;audio&nbsp;track<br>
 &nbsp;<br>
-:return:&nbsp;A&nbsp;string&nbsp;that&nbsp;labels&nbsp;each&nbsp;sequence&nbsp;of&nbsp;chord&nbsp;detected&nbsp;and&nbsp;the&nbsp;score</span></dd></dl>
+:return:&nbsp;A&nbsp;list&nbsp;of&nbsp;tuples&nbsp;containing&nbsp;the&nbsp;detected&nbsp;chords&nbsp;and&nbsp;percentage&nbsp;similarity&nbsp;score&nbsp;of&nbsp;the&nbsp;algorithm</span></dd></dl>
  <dl><dt><a name="-record"><strong>record</strong></a>()</dt><dd><span class="code">Microphone&nbsp;input&nbsp;is&nbsp;continuously&nbsp;recorded&nbsp;by&nbsp;writing&nbsp;blocks&nbsp;directly&nbsp;to&nbsp;a&nbsp;file<br>
 &nbsp;<br>
 Uses&nbsp;a&nbsp;producer-consumer&nbsp;model&nbsp;with&nbsp;a&nbsp;queue&nbsp;as&nbsp;the&nbsp;store.&nbsp;Recording&nbsp;stops&nbsp;once&nbsp;the&nbsp;user&nbsp;terminates&nbsp;the&nbsp;kernel<br>

@@ -60,7 +60,7 @@ def get_chords(chords, sr):
     :param chords: the raw audio loaded by librosa.load(), stored as a numpy array
     :param sr: The sample rate of the audio track
     
-    :return: A string that labels each sequence of chord detected and the score
+    :return: A list of tuples containing the detected chords and percentage similarity score of the algorithm
 
     """
     onset_frames = librosa.onset.onset_detect(y=chords, sr=sr)
