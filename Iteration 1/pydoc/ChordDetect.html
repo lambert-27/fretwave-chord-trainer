@@ -8,11 +8,11 @@
 <table class="heading">
 <tr class="heading-text decor">
 <td class="title">&nbsp;<br><strong class="title">ChordDetect</strong></td>
-<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Crepos%5Cy4-project%5Citeration%201%5Cchorddetect.py">c:\repos\y4-project\iteration 1\chorddetect.py</a></td></tr></table>
-    <p><span class="code">Purpose:&nbsp;Functions&nbsp;extracted&nbsp;from&nbsp;First&nbsp;Iteration&nbsp;notebooks&nbsp;to&nbsp;perform&nbsp;chord&nbsp;and&nbsp;onset&nbsp;detection<br>
-Author:&nbsp;Mark&nbsp;Lambert<br>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Crepos%5Cfretwave-chord-trainer%5Citeration%201%5Cchorddetect.py">c:\repos\fretwave-chord-trainer\iteration 1\chorddetect.py</a></td></tr></table>
+    <p><span class="code">Purpose:&nbsp;Functions&nbsp;extracted&nbsp;from&nbsp;First&nbsp;Iteration&nbsp;notebooks&nbsp;to&nbsp;record&nbsp;and&nbsp;perform&nbsp;chord&nbsp;and&nbsp;onset&nbsp;detection<br>
+Provides&nbsp;a&nbsp;bank&nbsp;of&nbsp;chord&nbsp;templates&nbsp;represented&nbsp;as&nbsp;12&nbsp;length&nbsp;vectors&nbsp;mapped&nbsp;to&nbsp;each&nbsp;pitch&nbsp;class&nbsp;<br>
 &nbsp;<br>
-Provides&nbsp;a&nbsp;bank&nbsp;of&nbsp;chord&nbsp;templates&nbsp;represented&nbsp;as&nbsp;12&nbsp;length&nbsp;vectors&nbsp;mapped&nbsp;to&nbsp;each&nbsp;pitch&nbsp;class</span></p>
+Author:&nbsp;Mark&nbsp;Lambert</span></p>
 <p>
 <table class="section">
 <tr class="decor pkg-content-decor heading-text">
@@ -21,19 +21,29 @@ Provides&nbsp;a&nbsp;bank&nbsp;of&nbsp;chord&nbsp;templates&nbsp;represented&nbs
 <tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
 <td class="singlecolumn"><table><tr><td class="multicolumn"><a href="librosa.html">librosa</a><br>
 <a href="numpy.html">numpy</a><br>
-</td><td class="multicolumn"><a href="matplotlib.pyplot.html">matplotlib.pyplot</a><br>
-<a href="queue.html">queue</a><br>
-</td><td class="multicolumn"><a href="sounddevice.html">sounddevice</a><br>
+<a href="matplotlib.pyplot.html">matplotlib.pyplot</a><br>
+</td><td class="multicolumn"><a href="queue.html">queue</a><br>
+<a href="sounddevice.html">sounddevice</a><br>
 <a href="soundfile.html">soundfile</a><br>
 </td><td class="multicolumn"><a href="sys.html">sys</a><br>
 <a href="tempfile.html">tempfile</a><br>
-</td></tr></table></td></tr></table><p>
+<a href="time.html">time</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor functions-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
     
 <tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><dl><dt><a name="-analyse"><strong>analyse</strong></a>()</dt></dl>
+<td class="singlecolumn"><dl><dt><a name="-analyse"><strong>analyse</strong></a>()</dt><dd><span class="code">Helper&nbsp;function&nbsp;used&nbsp;during&nbsp;notebook&nbsp;research&nbsp;that&nbsp;loads&nbsp;the&nbsp;clip&nbsp;saved&nbsp;by&nbsp;<a href="#-record">record</a>(),<br>
+calculate&nbsp;the&nbsp;average&nbsp;chroma&nbsp;and&nbsp;detect&nbsp;the&nbsp;chord<br>
+&nbsp;<br>
+:return:&nbsp;The&nbsp;detected&nbsp;chord&nbsp;and&nbsp;similarity&nbsp;score&nbsp;from&nbsp;detect_chord</span></dd></dl>
+ <dl><dt><a name="-check_chords"><strong>check_chords</strong></a>(detected, prompted)</dt><dd><span class="code">Compares&nbsp;each&nbsp;detected&nbsp;chord&nbsp;against&nbsp;the&nbsp;chord&nbsp;the&nbsp;user&nbsp;was&nbsp;prompted&nbsp;with,&nbsp;in&nbsp;the&nbsp;order&nbsp;they&nbsp;appeared&nbsp;when&nbsp;printed<br>
+&nbsp;<br>
+:param&nbsp;detected:&nbsp;list&nbsp;of&nbsp;tuples&nbsp;containing&nbsp;(chord,&nbsp;percent)&nbsp;returned&nbsp;from&nbsp;<a href="#-get_chords">get_chords</a>()<br>
+:param&nbsp;prompted:&nbsp;list&nbsp;of&nbsp;chord&nbsp;names&nbsp;the&nbsp;user&nbsp;was&nbsp;prompted&nbsp;with,&nbsp;in&nbsp;order&nbsp;they&nbsp;appeared&nbsp;when&nbsp;printed<br>
+&nbsp;<br>
+:return:&nbsp;list&nbsp;of&nbsp;tuples,&nbsp;true&nbsp;if&nbsp;the&nbsp;chord&nbsp;occured&nbsp;at&nbsp;the&nbsp;same&nbsp;position&nbsp;as&nbsp;the&nbsp;detected&nbsp;along&nbsp;with&nbsp;the&nbsp;prompted&nbsp;chord&nbsp;name</span></dd></dl>
  <dl><dt><a name="-detect_chord"><strong>detect_chord</strong></a>(chroma_frame)</dt><dd><span class="code">Detect&nbsp;notes&nbsp;in&nbsp;a&nbsp;chroma&nbsp;vector&nbsp;using&nbsp;cosine&nbsp;similarity&nbsp;against&nbsp;the&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;template&nbsp;chord&nbsp;bank&nbsp;and&nbsp;return&nbsp;the&nbsp;closest&nbsp;match<br>
 &nbsp;<br>
