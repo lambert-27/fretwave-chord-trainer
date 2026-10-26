@@ -26,7 +26,7 @@ Repo for Final year project for Year 4 Software Development: a tool for detectin
 ## Project files
 
 - `Iteration 1/` — First Iteration chord and onset detection code 
-- `Documentation/` — project specification and diary
+- `Documentation/` — project specification, first iteration report and diary
 
 # Iteration 1
 
