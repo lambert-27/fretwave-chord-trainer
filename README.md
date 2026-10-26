@@ -34,7 +34,7 @@ The first iteration explores the functionality of `librosa`, with the aim of usi
 
 ## Features Explored
 
-- **Chord recognition:** `ChordDetect.py` analyses audio with librosa's chroma features and compares the average pitch-class profile with a small set of chord templates: C, G, D, Dm, Em, Em, Am, F and A. It uses cosine similarity to choose the closest match.
+- **Chord recognition:** `ChordDetect.py` analyses audio with librosa's chroma features and compares the average pitch-class profile with a small set of chord templates: C, G, D, Dm, E, Em, Am, F and A. It uses cosine similarity to choose the closest match.
 - **Audio input and recording:** The prototype can record from the computer's default microphone and save a WAV clip for analysis.
 - **Chord-change timing research:** The notebooks investigate onset detection as a way to measure when chords are played and how long changes take.
 - **Chord Prompting:** The final release goal, explores user interaction with the chord detection algorithms. Prints three random chords, begins the recording process and when finished, detects the chords and if the strummed chords matched the prompted chords
