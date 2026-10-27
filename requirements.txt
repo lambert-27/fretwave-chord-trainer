@@ -3,3 +3,5 @@ matplotlib
 numpy
 sounddevice
 soundfile
+Pillow
+ipython
