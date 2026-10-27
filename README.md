@@ -10,7 +10,7 @@ Repo for Final year project for Year 4 Software Development: a tool for detectin
 
 # Installation
 ## Prerequisites
-- Python 3.14.7 or newer
+- Python 3.14 or newer
 - Jupyter lab or your IDE of choice
 - For live recording, a working microphone
 - A tuned guitar!
