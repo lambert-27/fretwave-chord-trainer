@@ -107,6 +107,10 @@ def get_chords(chords, sr):
 def check_chords(detected, prompted):
     """
     Compares each detected chord against the chord the user was prompted with, in the order they appeared when printed
+        
+    The function looksahead by one to the next chord in the event that the user makes a mistake allowing them one margin of error.
+    This helps with the current sensitivity of the onsets that was making the notebook very challenging for a newcomer.
+        
 
     :param detected: list of tuples containing (chord, percent) returned from get_chords()
     :param prompted: list of chord names the user was prompted with, in order they appeared when printed
@@ -120,7 +124,9 @@ def check_chords(detected, prompted):
         # Check if a chord was detected at this index and if it matches the target
         if i < len(detected) and detected[i][0] == chord:
             is_correct = True
-
+        elif i+1 < len(detected) and detected[i+1][0] == chord:
+            is_correct = True
+            i += 1
         result = (chord, is_correct)
         results.append(result)
     return results
