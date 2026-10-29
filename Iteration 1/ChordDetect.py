@@ -76,7 +76,7 @@ def get_chords(chords, sr):
     buffer = 0.5
     # iterate each raw onset, filter out any that happen within buffer length of time
     for i in range (1, len(onset_frames)):
-        prev = onset_frames[i-1]
+        prev = onset_frames[-1]
         cur = onset_frames[i]
 
         frame_since_last = cur - prev
@@ -118,15 +118,20 @@ def check_chords(detected, prompted):
     :return: list of tuples, true if the chord occured at the same position as the detected along with the prompted chord name
     """
     results = []
+    # gives the user a margin of error
+    lookahead = 0
     
     for i, chord in enumerate(prompted):
         is_correct = False
+        # index variable, for lookahead
+        index = i + lookahead 
         # Check if a chord was detected at this index and if it matches the target
-        if i < len(detected) and detected[i][0] == chord:
+        if index < len(detected) and detected[index][0] == chord:
             is_correct = True
-        elif i+1 < len(detected) and detected[i+1][0] == chord:
+        # only allow the user one margin of error, otherwise too easy
+        elif lookahead == 0 and index+1 < len(detected) and detected[index+1][0] == chord:
             is_correct = True
-            i += 1
+            lookahead += 1
         result = (chord, is_correct)
         results.append(result)
     return results
@@ -148,7 +153,7 @@ def record():
     q = queue.Queue()
 
     # added a small sleep to allow for getting ready to strum
-    time.sleep(1)
+    time.sleep(2)
     def callback(indata, _, __, ___):
         """This is called from a separate thread for each audio block."""
         q.put(indata.copy())
