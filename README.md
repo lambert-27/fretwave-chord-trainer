@@ -56,7 +56,15 @@ Open `ChordPromptNotebook.ipynb` to run the chord prompt: it shows three chord d
 - `OnsetDetectionResearch.ipynb` and `OnsetDetectionApplied.ipynb` — research and experiments with librosa's `onset_detect` function
 - - `ChordDetectTest.py` — unit tests for `ChordDetect.py`, run with `python -m unittest ChordDetectTest` from the `Iteration 1` folder (WIP)
 - `clips/` — audio clips used for testing and development, and the folder where recordings are saved
-- `chords/` - 9 chord diagram jpg files used in `ChordPromptNotebook.ipynb` to prompt the user with three random chords 
+- `chords/` - 9 chord diagram jpg files used in `ChordPromptNotebook.ipynb` to prompt the user with three random chords
+
+## Known limitations
+
+- Works on recorded clips only, no real-time detection
+- Recording is stopped by interrupting the kernel (the stop button in Jupyter Notebook)
+- `check_chords` marks a chord correct regardless of its similarity score. Setting a minimum boundary on score increases algorithm confidence
+- Open-position major and minor chords only. No barre chord variants, sevenths etc
+
 
 ## Author
 
