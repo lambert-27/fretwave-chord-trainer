@@ -76,7 +76,7 @@ def get_chords(chords, sr):
     buffer = 0.5
     # iterate each raw onset, filter out any that happen within buffer length of time
     for i in range (1, len(onset_frames)):
-        prev = onset_frames[-1]
+        prev = onset_frames[i-1]
         cur = onset_frames[i]
 
         frame_since_last = cur - prev
