@@ -6,11 +6,9 @@ Author: Mark Lambert
 
 """
 import librosa
-import matplotlib.pyplot as plt
 import numpy as np
 import queue
 import sys
-import tempfile
 import sounddevice as sd
 import soundfile as sf
 import time
