@@ -146,7 +146,7 @@ def record():
     # producer-consumer model for continuous recording. Using a queue and a callback to 
     # produce blocks of audio that are pushed to the queue and then pulled 
     # by the q.get(), to consume from the buffer and written to the file
-    filename = "clips/testclip.wav" 
+    filename = "../data/clips/testclip.wav" 
     freq = 44100  
     q = queue.Queue()
 
@@ -174,7 +174,7 @@ def record():
     except Exception as e:
         print(f"Error: {type(e).__name__} - {e}")
 
-    clip, sr = librosa.load('clips/testclip.wav', sr=None)
+    clip, sr = librosa.load('../data/clips/testclip.wav', sr=None)
     return clip, sr
 
 def analyse():
@@ -184,7 +184,7 @@ def analyse():
 
         :return: The detected chord and similarity score from detect_chord
     """
-    clip, samplerate = librosa.load('clips/testclip.wav', sr=None)
+    clip, samplerate = librosa.load('../data/clips/testclip.wav', sr=None)
     chroma = librosa.feature.chroma_cqt(y=clip, sr=samplerate)
     avg_chroma = np.mean(chroma, axis=1)
     return detect_chord(avg_chroma)

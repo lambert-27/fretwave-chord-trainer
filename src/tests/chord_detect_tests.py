@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
-from ChordDetect import chord_templates, detect_chord, get_chords, check_chords, record
+from src.fretwave.chord_detect import chord_templates, detect_chord
+
 
 class ChordDetectTest(unittest.TestCase):
 
