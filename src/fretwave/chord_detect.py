@@ -101,7 +101,66 @@ def get_chords(chords, sr):
         print(f"Chord: {chord}, Score:{percent:.2f}%")
         detected.append((chord, percent))
     return detected
+
+# TODO tidy this up, as well as other notebooks
+def get_chords_extended(clip, sr): 
+    rms = librosa.feature.rms(y=clip)[0]
+    onset_frames = librosa.onset.onset_detect(y=clip, sr=sr)
+    chroma = librosa.feature.chroma_cqt(y=clip, sr=sr)
+
+    valid_threshold = 0.2 * rms.max()
+    frame_offset = 2
+    strum_group = []
+    detected = []
+    buffer = 0.5
     
+    for frame in onset_frames:
+        # get the frame number for each valid energy wave 
+        # curr is the rms value for current frame
+        curr = rms[frame]
+        # prev is rms value for current frame - 2 frames
+        prev = rms[frame - frame_offset]
+    
+        # check if above valid threshold (filter noise) and
+        # curr is louder than preevious, showing rise in energy
+        if curr > valid_threshold and curr > 1.3 * prev:
+            strum_group.append(frame)
+    
+    # logic from get_chords() 
+    onset_frames = np.append(onset_frames, chroma.shape[1])
+
+    for i in range(1, len(onset_frames)):
+        prev = onset_frames[i-1]
+        cur = onset_frames[i]
+    
+        frame_since_last = cur - prev
+        if librosa.frames_to_time(frame_since_last, sr=sr) > buffer:
+            strum_group.append(cur)
+    strum_group = sorted(set(strum_group))
+    print(strum_group)
+    
+    # then iterate through the strumgroup list and define an end for each slice of chord
+    for index, strum_start in enumerate(strum_group):
+        if index + 1 < len(strum_group):
+            strum_end = strum_group[index+1]
+        else:
+            strum_end = len(chroma[0])               
+        if strum_start >= strum_end:
+            continue
+        # using multi demnsional array slicing, we keep all 12 rows (the pitch class)
+        # and slice from frame prev to frame cur
+        strum_slice = chroma[:, strum_start: strum_end]
+    
+        # calculate the average chroma for the slice
+        avg_chroma = np.mean(strum_slice, axis=1)
+        
+        chord, score = detect_chord(avg_chroma)
+
+        percent = score*100
+        print(f"Chord: {chord}, Score:{percent:.2f}%")
+        detected.append((chord, percent))
+    return detected
+
 def check_chords(detected, prompted):
     """
     Compares each detected chord against the chord the user was prompted with, in the order they appeared when printed
