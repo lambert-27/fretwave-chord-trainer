@@ -67,7 +67,24 @@ Open `chord_prompt_notebook.ipynb` to run the chord prompt: it shows three chord
 - `check_chords` marks a chord correct regardless of its similarity score. Setting a minimum boundary on score increases algorithm confidence
 - Open-position major and minor chords only. No barre chord variants, sevenths etc
 
+# Iteration 2
 
+The second iteration expands on the concepts explored in iteration 1. The `chord_templates` dictionary has been expanded by extracting just the minor and major chord structures (Root, Major/Minor Third, Perfect Fifth) and cyclically rotating the the major and minor templates by 1 position for each of the twelve notes in the pitch class.
+
+The onset detection logic has also been refined. Chord strum starts are detected using `librosa.rms`which computes the energy using Root Mean Square. Strum ends are then calculated using the same flow as iteration 1, where we check for any onsets within a buffer and keep only the valid ones. 
+
+With the new found onsets, we know that the first onsets are for a chord segment because rms always starts with detecting the first strum, and the second onsets are for a transition, therefore, by using the modulo operator, we can check if the index is even or odd and append the two onsets to a `strum_group` list of tuples or a `transition_group` of tuples, cleanly segmenting the onsets into two easily iterable lists of onsets, ready for analysis
+
+## Features Explored
+
+- **Onset detection:** the basic onset detection used for iteration 1 is analysed by plotting the onsets ontop of the audiowave, visually highlighting the current issues with the detection. The results of the analysis were used to refine the preveious solution by incorprating rms to reliably detect strum starts 
+- **Chord template expansion:** the set of `chord_templates` in `chord_detect.py` have been expanded by using cyclical array rotation on two vectors `maj_template` and `min_template` each of which hold the 12 length vector for a major chord (Root, Major Third, Perfect Fifth) and a minor chord (Root, Minor Third, Perfect Fifth)
+
+## Files
+- `2.1_onset_detection_refinement` - Onset detection from iteration 1 is analysed and refined
+- `2.2-chord_detection_notebook-extended` - The refined onset detection from the previous notebook is executed on a clip and compared against the previous iterations performance
+- `2.3_chord_template_generation` - The `chord_templates` dictionary is expanded to eliiminate hard-coded chord templates
+  
 ## Author
 
 **Mark Lambert C00192497**
