@@ -66,7 +66,8 @@ def get_onsets(clip, sr):
     rms = librosa.feature.rms(y=clip)[0]
     onset_frames = librosa.onset.onset_detect(y=clip, sr=sr)
     chroma = librosa.feature.chroma_cqt(y=clip, sr=sr)
-
+    onset_frames = np.append(onset_frames, chroma.shape[1])
+    
     valid_threshold = 0.2 * rms.max()
     frame_offset = 2
     buffer = 0.5
@@ -78,28 +79,29 @@ def get_onsets(clip, sr):
     # list of valid strum onsets detected by rms
     strums = []
 
-    # find starts w/ rms
-    for frame in onset_frames:
-        # get the frame number for each valid energy wave 
-        # curr is the rms value for current frame
-        curr = rms[frame]
-        # prev is rms value for current frame - 2 frames
-        prev = rms[frame - frame_offset]
+    # find strum end onsets
+    for i in range(len(onset_frames)):
+        frame = onset_frames[i]
+
+        # only check for strum end onsets if there has already been a detected onset
+        if i > 0:
+            prev = onset_frames[i-1]
+            cur = onset_frames[i]
     
+            frame_since_last = cur - prev
+            if librosa.frames_to_time(frame_since_last, sr=sr) > buffer:
+                strums.append(cur)
+                continue
+        
+        # find starts w/ rms
+        if frame < len(rms):
+            curr = rms[frame]
+            prev = rms[frame-frame_offset]
+        
         # check if above valid threshold (filter noise) and
         # curr is louder than preevious, showing rise in energy
         if curr > valid_threshold and curr > 1.4 * prev:
             strums.append(frame)
-    onset_frames = np.append(onset_frames, chroma.shape[1])
-
-    # find strum end onsets
-    for i in range(1, len(onset_frames)):
-        prev = onset_frames[i-1]
-        cur = onset_frames[i]
-
-        frame_since_last = cur - prev
-        if librosa.frames_to_time(frame_since_last, sr=sr) > buffer:
-            strums.append(cur)
 
     # sort the strum list so that they are in chronological order
     strums = sorted(set(strums))
