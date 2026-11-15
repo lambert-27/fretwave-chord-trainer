@@ -67,8 +67,6 @@ def get_strum_starts(rms, onset_frames, chroma, valid_threshold, frame_offset, b
     
     :return starts: A list of frame indices containing the beginning onset of a strum segment, detected by using rms, returned by get_strum_starts
     '''
-    onset_frames = np.append(onset_frames, chroma.shape[1])
-    
     starts = []
     for frame in onset_frames:
         if frame >= len(rms):
