@@ -48,63 +48,93 @@ def detect_chord(chroma_frame):
             best_score = score
 
     return best_match, best_score
+
+
     
-
-def get_onsets(clip, sr): 
+def get_strum_starts(rms, onset_frames, chroma, valid_threshold, frame_offset, buffer, sr):
     '''
-        Detects onsets of a clip and divides them into tuples containing (start, end) frames for 
-            groups of strums and transitions
+    Detects the beginning onset of a strum by using RMS to detect a surge in energy as an attack
 
-        :param clip: the raw audio loaded by librosa.load(), stored as a numpy array
-        :param sr: The sample rate of the audio track
-
-        :return strum_group: A list of tuples, each marking the beginning and ending of a chord (start, end)
-        :return transition_group: A list of tuples, each marking the end of a chord and the beginning of the next (start, end)
+    :param rms: The full rms nparray returned by librosa for the audio clip
+    :param onset_frames: The list of frame onsets detected by librosa, with the final frame being the last frame of the clip
+    :param chroma: The chroma vector for the audio clip calculated by librosa
+    :param valid_threshold: A minimum energy value a frame must meet in order to be marked as an onset
+    :param frame_offset: Offset value for looking back at previous frames
+    :param buffer: A time in seconds used to filter out offsets that occur within the buffer length
+    :param sr: Sample rate of the audio clip
+    
+    :return starts: A list of frame indices containing the beginning onset of a strum segment, detected by using rms, returned by get_strum_starts
     '''
-    # basic normalisation so that the rms becomes more accurate
-    clip = librosa.util.normalize(clip)
-    rms = librosa.feature.rms(y=clip)[0]
-    onset_frames = librosa.onset.onset_detect(y=clip, sr=sr)
-    chroma = librosa.feature.chroma_cqt(y=clip, sr=sr)
     onset_frames = np.append(onset_frames, chroma.shape[1])
     
-    valid_threshold = 0.2 * rms.max()
-    frame_offset = 2
-    buffer = 0.5
+    starts = []
+    for frame in onset_frames:
+        if frame >= len(rms):
+            continue
+        if starts:
+            time_since_last_strum = librosa.frames_to_time(frame - starts[-1], sr=sr)
+            if time_since_last_strum < buffer:
+                continue
+    
+        # look @ max RMS within the next 5 frames (current, plus next 5 = 6) to capture full strum swell
+        window_end = frame+6
+        peak_rms = np.max(rms[frame:window_end])
+    
+        # get the rms of the previous frame, if the current one is 1.5 times louder, it has attack
+        # that can be classified as a strum
+        prev = frame - frame_offset
+        if prev < 0:
+            prev = 0
+        prev_rms = rms[prev]
+    
+        if peak_rms > valid_threshold and peak_rms > 1.5 * prev_rms:
+            starts.append(frame)
+            
+    return starts
+    
+def get_strum_ends(starts, rms, onset_frames, min_len):
+    '''
+    Detects the end of a strum segment/start of a transition segment
 
+    :param starts: A list of frame indices containing the beginning onset of a strum segment, detected by using rms, returned by get_strum_starts
+    :param rms: The full rms nparray returned by librosa for the audio clip
+    :param onset_frames: The list of frame onsets detected by librosa, with the final frame being the last frame of the clip
+    :param min_len: The value of buffer converted from time to frames by librosa
+    
+    :return strum_group: A list of tuples, each marking the beginning and ending of a chord (start, end)
+    :return transition_group: A list of tuples, each marking the end of a chord and the beginning of the next (start, end)
+    '''
+    no_strums = len(starts)
+    total_frames = len(rms)
+    strums = []
+    for i, start in enumerate(starts):
+        # runs until the next strum OR end of clip for last strum
+        end = starts[i + 1] if i + 1 < no_strums else total_frames
+    
+        # first raw onset after the cooldown window and before the next strum
+        pre = onset_frames[(onset_frames > start + min_len) & (onset_frames < end)]
+        if pre.size:
+            end = pre[0]
+    
+        strums.append(start)
+        strums.append(end)
+    # sort the strum list so that they are in chronological order
+    strums = sorted(set(strums))
+    
+    return strums
+
+def get_onsets(strums): 
+    '''
+    Splits all detected onsets into sepearate lists of tuples, one for strums and one for transitions, each with a (start, end) frame
+
+    :param strums: A list of tuples containing a (start, end) 
+
+    :return strum_group: A list of tuples, each marking the beginning and ending of a chord (start, end)
+    :return transition_group: A list of tuples, each marking the end of a chord and the beginning of the next (start, end)
+    '''
     # lists of tuples w/ (start, end) frames
     strum_group = []
     transition_group = []
-
-    # list of valid strum onsets detected by rms
-    strums = []
-
-    # find strum end onsets
-    for i in range(len(onset_frames)):
-        frame = onset_frames[i]
-
-        # only check for strum end onsets if there has already been a detected onset
-        if i > 0:
-            prev = onset_frames[i-1]
-            cur = onset_frames[i]
-    
-            frame_since_last = cur - prev
-            if librosa.frames_to_time(frame_since_last, sr=sr) > buffer:
-                strums.append(cur)
-                continue
-        
-        # find starts w/ rms
-        if frame < len(rms):
-            curr = rms[frame]
-            prev = rms[frame-frame_offset]
-        
-        # check if above valid threshold (filter noise) and
-        # curr is louder than preevious, showing rise in energy
-        if curr > valid_threshold and curr > 1.4 * prev:
-            strums.append(frame)
-
-    # sort the strum list so that they are in chronological order
-    strums = sorted(set(strums))
 
     # then iterate through each set of onsets
     for i in range(len(strums) - 1):
@@ -152,7 +182,7 @@ def detect_chords(strum_group, chroma):
         print(f"Chord: {chord}, Score:{percent:.2f}%")
         detected.append((chord, percent))
     return detected
-
+    
 def get_chords(clip, sr):
     '''
         Helper function used by the chord_prompt notebooks that act as the gateway to triggering the 
@@ -164,7 +194,19 @@ def get_chords(clip, sr):
         :return detected: a list of tuples containing the chord name and similarity score of the algorithm
     '''
     chroma = librosa.feature.chroma_cqt(y=clip, sr=sr)
-    strum_group, transition_group = get_onsets(clip, sr)
+    rms = librosa.feature.rms(y=clip)[0]
+    onset_frames = librosa.onset.onset_detect(y=clip, sr=sr)
+    onset_frames = np.append(onset_frames, chroma.shape[1])
+    
+    valid_threshold = 0.2 * rms.max()
+    frame_offset = 2
+    buffer = 0.5
+    total_frames = len(rms)
+    min_len = int(librosa.time_to_frames(buffer, sr=sr))
+
+    starts = get_strum_starts(rms, onset_frames, chroma, valid_threshold, frame_offset, buffer, sr)
+    strums = get_strum_ends(starts, rms, onset_frames, min_len)
+    strum_group, transition_group = get_onsets(strums)
     # TODO detect_transition_times()?
     return detect_chords(strum_group, chroma)
     
