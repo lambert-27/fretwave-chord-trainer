@@ -13,7 +13,6 @@ import sounddevice as sd
 import soundfile as sf
 import time
 
-
 # 0=C, 1=C#, 2=D, 3=D#, 4=E, 5=F, 6=F#, 7=G, 8=G#, 9=A, 10=A#, 11=B, 
 maj_template = [1,0,0,0,1,0,0,1,0,0,0,0]
 min_template = [1,0,0,1,0,0,0,1,0,0,0,0]
@@ -26,7 +25,7 @@ for name in chord_names:
     # list slicing, removes the last element in the list and appends it to the front 
     maj_template = [maj_template[-1]] + maj_template[0:-1]
     min_template = [min_template[-1]] + min_template[0:-1]
-    
+
 def detect_chord(chroma_frame):
     '''
     Detect notes in a chroma vector using cosine similarity against the 
@@ -159,12 +158,12 @@ def get_onsets(strums):
 
 def detect_chords(strum_group, chroma):
     '''
-        Detects each chord in the list of tuples containing onsets for valid strums
+    Detects each chord in the list of tuples containing onsets for valid strums
 
-        :param strum_group: a list of tuples, containing onsets that mark the start and end of chords (start, end)
-        :param chroma: the chroma vector computed for the source clip
+    :param strum_group: a list of tuples, containing onsets that mark the start and end of chords (start, end)
+    :param chroma: the chroma vector computed for the source clip
 
-        :return detected: a list of tuples containing the chord name and similarity score of the algorithm
+    :return detected: a list of tuples containing the chord name and similarity score of the algorithm
     '''
     detected = []
     # then iterate through the strumgroup list and define an end for each slice of chord
@@ -185,13 +184,13 @@ def detect_chords(strum_group, chroma):
     
 def get_chords(clip, sr):
     '''
-        Helper function used by the chord_prompt notebooks that act as the gateway to triggering the 
-            rest of the chord and onset detection logic
+    Helper function used by the chord_prompt notebooks that act as the gateway to triggering the 
+        rest of the chord and onset detection logic
 
-        :param clip: the raw audio loaded by librosa.load(), stored as a numpy array
-        :param sr: The sample rate of the audio track
+    :param clip: the raw audio loaded by librosa.load(), stored as a numpy array
+    :param sr: The sample rate of the audio track
 
-        :return detected: a list of tuples containing the chord name and similarity score of the algorithm
+    :return detected: a list of tuples containing the chord name and similarity score of the algorithm
     '''
     chroma = librosa.feature.chroma_cqt(y=clip, sr=sr)
     rms = librosa.feature.rms(y=clip)[0]
@@ -207,9 +206,9 @@ def get_chords(clip, sr):
     starts = get_strum_starts(rms, onset_frames, chroma, valid_threshold, frame_offset, buffer, sr)
     strums = get_strum_ends(starts, rms, onset_frames, min_len)
     strum_group, transition_group = get_onsets(strums)
-    # TODO detect_transition_times()?
+    times = get_transition_times(transition_group, sr)
     return detect_chords(strum_group, chroma)
-    
+
 def check_chords(detected, prompted):
     """
     Compares each detected chord against the chord the user was prompted with, in the order they appeared when printed
@@ -241,6 +240,22 @@ def check_chords(detected, prompted):
         result = (chord, is_correct)
         results.append(result)
     return results
+
+def get_transition_times(transition_group, sr):
+    """
+    Subtracts the startfrom the end frame for each transition segment and converts the result to time       
+
+    :param transition_group: list of tuples containing (start, end) segments for each transition
+    :param sr: The sample rate of the audio track
+
+    :return: list of times in seconds for each transition
+    """
+    times = []
+    for start, end in transition_group:
+        frames = end - start
+        transition_time = librosa.frames_to_time(frames, sr=sr)
+        times.append(transition_time)
+    return times
 
 def record():
     """
@@ -287,10 +302,10 @@ def record():
 
 def analyse():
     """
-        Helper function used during notebook research that loads the clip saved by record(),
-        calculate the average chroma and detect the chord
+    Helper function used during notebook research that loads the clip saved by record(),
+    calculate the average chroma and detect the chord
 
-        :return: The detected chord and similarity score from detect_chord
+    :return: The detected chord and similarity score from detect_chord
     """
     clip, samplerate = librosa.load('../data/clips/testclip.wav', sr=None)
     chroma = librosa.feature.chroma_cqt(y=clip, sr=samplerate)
