@@ -299,15 +299,3 @@ def record():
 
     clip, sr = librosa.load('../data/clips/testclip.wav', sr=None)
     return clip, sr
-
-def analyse():
-    """
-    Helper function used during notebook research that loads the clip saved by record(),
-    calculate the average chroma and detect the chord
-
-    :return: The detected chord and similarity score from detect_chord
-    """
-    clip, samplerate = librosa.load('../data/clips/testclip.wav', sr=None)
-    chroma = librosa.feature.chroma_cqt(y=clip, sr=samplerate)
-    avg_chroma = np.mean(chroma, axis=1)
-    return detect_chord(avg_chroma)
