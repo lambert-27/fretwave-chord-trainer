@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module skill_levels</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">skill_levels</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:///home/mark/src/fretwave-chord-trainer/src/fretwave/skill_levels.py">/home/mark/src/fretwave-chord-trainer/src/fretwave/skill_levels.py</a></td></tr></table>
+    <p><span class="code">Purpose:&nbsp;Establishes&nbsp;a&nbsp;dictionary&nbsp;of&nbsp;skill&nbsp;level&nbsp;dictionaries,&nbsp;each&nbsp;containing&nbsp;a&nbsp;chord_accuracy_threshold&nbsp;and&nbsp;transition_target&nbsp;time&nbsp;parameter.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;chord&nbsp;gets&nbsp;accepted&nbsp;if&nbsp;the&nbsp;chord's&nbsp;similarity&nbsp;score&nbsp;is&nbsp;above&nbsp;their&nbsp;levels&nbsp;accuracy&nbsp;threshold<br>
+&nbsp;<br>
+Author:&nbsp;Mark&nbsp;Lambert</span></p>
+<p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-chord_accepted"><strong>chord_accepted</strong></a>(level, chord_name, chord_accuracy)</dt><dd><span class="code">Accepts&nbsp;or&nbsp;denies&nbsp;a&nbsp;users&nbsp;chord&nbsp;depending&nbsp;on&nbsp;two&nbsp;conditions:&nbsp;their&nbsp;accuracy&nbsp;score&nbsp;and&nbsp;the&nbsp;level&nbsp;of&nbsp;their&nbsp;playing&nbsp;(beginner&nbsp;|&nbsp;intermediate&nbsp;|&nbsp;advanced)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Prints&nbsp;an&nbsp;appropriate&nbsp;message&nbsp;for&nbsp;each&nbsp;chord<br>
+&nbsp;<br>
+:param&nbsp;level:&nbsp;the&nbsp;skill&nbsp;level&nbsp;of&nbsp;the&nbsp;user,&nbsp;as&nbsp;a&nbsp;string&nbsp;(beginner&nbsp;|&nbsp;intermediate&nbsp;|&nbsp;advanced)<br>
+:param&nbsp;chord_name:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;detected&nbsp;chord<br>
+:param&nbsp;chord_accuracy:&nbsp;The&nbsp;similarity&nbsp;score&nbsp;returned&nbsp;by&nbsp;the&nbsp;chord&nbsp;detection&nbsp;function</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>skill_levels</strong> = {'advanced': {'chord_accuracy_threshold': 90, 'transition_target': None}, 'beginner': {'chord_accuracy_threshold': 60, 'transition_target': None}, 'intermediate': {'chord_accuracy_threshold': 75, 'transition_target': None}}</td></tr></table>
+</body></html>
