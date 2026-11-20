@@ -119,7 +119,7 @@ def get_strum_ends(starts, rms, onset_frames, min_len):
         strums.append(start)
         strums.append(end)
     # sort the strum list so that they are in chronological order
-    strums = sorted(set(strums))
+    strums = sorted(strums)
     
     return strums
 
